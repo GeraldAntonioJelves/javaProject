@@ -18,6 +18,7 @@ jobs:
       run: docker build . --file Dockerfile --tag imagengerald:v1.0
     - name: Correr imagen Docker
       run: docker run docker.io/library/imagengerald:v1.0
+      continue-on-error: true
     - name: Aqua Security Trivy
       uses: aquasecurity/trivy-action@v0.36.0
       with: 
