@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag imagengerald:$(date +%s)
+      run: docker build . --file Dockerfile --tag imagengerald:v1.0
     - name: Correr imagen Docker
-      run: docker run imagengerald:$(date +%s)
+      run: docker run docker.io/library/imagengerald:v1.0
     
