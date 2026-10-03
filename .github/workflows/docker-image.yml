@@ -18,6 +18,11 @@ jobs:
       run: docker build . --file Dockerfile --tag imagengerald:v1.0
     - name: Correr imagen Docker
       run: docker run docker.io/library/imagengerald:v1.0
+    - name: Aqua Security Trivy
+      uses: aquasecurity/trivy-action@v0.36.0
+      with: 
+        image-ref: 'docker.io/library/imagengerald:v1.0'
+        severity: 'CRITICAL,HIGH'
 
   security:
   
@@ -25,8 +30,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Aqua Security Trivy
-        uses: aquasecurity/trivy-action@v0.36.0
-        with: 
-          image-ref: 'docker.io/library/imagengerald:v1.0'
-          severity: 'CRITICAL,HIGH'
+        run: echo 'Hola Mundo'
     
