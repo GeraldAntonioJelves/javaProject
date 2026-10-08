@@ -54,26 +54,28 @@ jobs:
         
     - name: Build the Docker image
       if: steps.check_dir.outputs.any_changed == 'true'
-      run: docker build . --file Dockerfile --tag imagengerald:v1.0
+      run: docker build . --file Dockerfile --tag imagengerald:${{ env.TAG }}
 
     - name: Crear variable con la imagen
       if: steps.check_dir.outputs.any_changed == 'true'
-      run: echo "FULL_IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}" >> $GITHUB_ENV
+      run: |
+        echo "FULL_IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}" >> $GITHUB_ENV
+        echo "GCP_IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}" >> $GITHUB_ENV
 
     - name: Crear directorio de imagen
       if: steps.check_dir.outputs.any_changed == 'true'
       run: |
-        docker tag imagengerald:v1.0 "$FULL_IMAGE_NAME"
+        docker tag imagengerald:${{ env.TAG }} "$FULL_IMAGE_NAME"
         docker push $FULL_IMAGE_NAME
       
     - name: Correr imagen Docker
-      run: docker run docker.io/library/imagengerald:v1.0
+      run: docker run GCP_IMAGE_NAME:latest
       continue-on-error: true
       
     - name: Aqua Security Trivy
       uses: aquasecurity/trivy-action@v0.36.0
       with: 
-        image-ref: 'docker.io/library/imagengerald:v1.0'
+        image-ref: 'docker.io/library/imagengerald:${{ env.TAG }}'
         format: 'json'
         output: 'trivy-results.json'
         severity: 'CRITICAL,HIGH,MEDIUM'
