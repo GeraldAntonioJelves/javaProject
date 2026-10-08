@@ -43,7 +43,7 @@ jobs:
     - name: Crear directorio de imagen
       run: |
         echo "FULL_IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}" >> $GITHUB_ENV
-        docker tag imagengerald:v1.0 $FULL_IMAGE_NAME
+        docker tag imagengerald:v1.0 "$FULL_IMAGE_NAME"
         docker push $FULL_IMAGE_NAME
       
     - name: Correr imagen Docker
