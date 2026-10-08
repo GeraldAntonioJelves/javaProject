@@ -10,7 +10,7 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION: southamerica-west1
   REPOSITORY: myrepostandar
-  IMAGE_NAME: imagengerald:v1.0
+  IMAGE_NAME: imagengerald
   TAG: ${{ github.sha }}
 
 permissions:
@@ -36,15 +36,15 @@ jobs:
     - name: Configurar Docker para Artifact Registry
       run: |-
         gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+        
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag imagengerald:v1.0
 
     - name: Crear directorio de imagen
       run: |
         echo "FULL_IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}" >> $GITHUB_ENV
         docker tag imagengerald:v1.0 $FULL_IMAGE_NAME
         docker push $FULL_IMAGE_NAME
-        
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag imagengerald:v1.0
       
     - name: Correr imagen Docker
       run: docker run docker.io/library/imagengerald:v1.0
