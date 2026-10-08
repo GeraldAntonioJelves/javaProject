@@ -69,7 +69,7 @@ jobs:
         docker push $FULL_IMAGE_NAME
       
     - name: Correr imagen Docker
-      run: docker run GCP_IMAGE_NAME:latest
+      run: docker run $GCP_IMAGE_NAME:latest
       continue-on-error: true
       
     - name: Aqua Security Trivy
