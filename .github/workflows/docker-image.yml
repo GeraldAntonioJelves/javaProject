@@ -26,6 +26,21 @@ jobs:
     steps:
     
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Importante: obtiene el historial completo para comparar commits correctamente
+
+    - name: Comprobar cambios en un directorio específico
+      id: check_dir
+      uses: tj-actions/changed-files@v45
+      with:
+        files: |
+            .github/workflows/** # Reemplaza con la ruta de tu carpeta
+            
+    - name: Enviar mensaje si hubo cambios
+      if: steps.check_dir.outputs.any_changed == 'true'
+      run: | 
+        echo "No se creara una nueva version de imagen"
+        echo "Archivos modificados: ${{ steps.check_dir.outputs.all_changed_files }}"
 
     - name: Funcion para autenticarse en GCP
       uses: google-github-actions/auth@v2
@@ -38,12 +53,15 @@ jobs:
         gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
         
     - name: Build the Docker image
+      if: steps.check_dir.outputs.any_changed == 'false'
       run: docker build . --file Dockerfile --tag imagengerald:v1.0
 
     - name: Crear variable con la imagen
+      if: steps.check_dir.outputs.any_changed == 'false'
       run: echo "FULL_IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}" >> $GITHUB_ENV
 
     - name: Crear directorio de imagen
+      if: steps.check_dir.outputs.any_changed == 'false'
       run: |
         docker tag imagengerald:v1.0 "$FULL_IMAGE_NAME"
         docker push $FULL_IMAGE_NAME
